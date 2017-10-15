@@ -6,7 +6,10 @@ ChuangMi IR Remote plugin for HomeBridge.
 Thanks for [nfarina](https://github.com/nfarina)(the author of [homebridge](https://github.com/nfarina/homebridge)), [OpenMiHome](https://github.com/OpenMiHome/mihome-binary-protocol), [aholstenson](https://github.com/aholstenson)(the author of [miio](https://github.com/aholstenson/miio)), all other developer and testers.   
 
 ## Supported Types
-1.Switch   
+1.Switch
+2.LightBulb
+3.Projector
+4.Airconditioner
 
 ## Installation
 1. Install HomeBridge, please follow it's [README](https://github.com/nfarina/homebridge/blob/master/README.md).   
@@ -23,7 +26,7 @@ npm install -g miio homebridge-mi-ir-remote
         "platform": "ChuangmiIRPlatform",
         "hidelearn": false,
         "learnconfig":{
-            "ip": "192.168.31.2xx",
+            "ip": "192.168.31.xx",
             "token": "xxxxxxx"
         },
         "deviceCfgs": [{
@@ -35,7 +38,52 @@ npm install -g miio homebridge-mi-ir-remote
                 "on" : "xxxxxxx",
                 "off": "xxxxxxx"
             }
-        }]
+        },{
+                "type": "Projector",
+                "ip": "192.168.31.xx",
+                "token": "xxxxxxxx",
+                "Name": "IR Projector",
+                "interval": 1,
+                "data": {
+                    "on" : "xxxxxxxxxxxxx",
+                    "off": "xxxxxxxxxxxxx"
+                }
+        },{
+                "type": "Light",
+                "ip": "192.168.31.xx",
+                "token": "xxx",
+                "Name": "IR LightBulb",
+                "data": {
+                    "100" : "xxxx",
+                    "75" : "xxxxx",
+                    "50" : "xxxxx",
+                    "25" : "xxxxx",
+                    "off" : "xxxx"
+                }
+         },{
+                "type": "AirConditioner",
+                "ip": "192.168.31.xx",
+                "token": "xxx",
+                "Name": "IR AC",
+                "DefaultTemperature": 25,
+                "MinTemperature": 16,
+                "MaxTemperature": 30,
+                "data": {
+                    "Cool":{
+                        "30" : "xxx",
+                        "25" : "xxx",
+                        "20" : "xxx",
+                        "16" : "xxx"
+                    },
+                    "Heat":{
+                        "30" : "xxx",
+                        "25" : "xxx",
+                        "20" : "xxx",
+                        "16" : "xxx"
+                    },
+                    "off" : "xxxx"
+                }
+            }]
     }]
 ```
 ## Get token

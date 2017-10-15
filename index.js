@@ -1,5 +1,8 @@
 require('./Devices/irLearn');
 require('./Devices/MiSwitch');
+require('./Devices/MiLight');
+require('./Devices/MiProjector');
+require('./Devices/MiAirConditioner');
 
 var fs = require('fs');
 var packageFile = require("./package.json");
@@ -88,6 +91,18 @@ ChuangmiIRPlatform.prototype = {
                 
                 if (deviceCfg['type'] == "Switch") {
                     new MiSwitch(this, deviceCfg).forEach(function(accessory, index, arr){
+                        myAccessories.push(accessory);
+                    });
+                } else if (deviceCfg['type'] == "Light") {
+                    new MiLight(this, deviceCfg).forEach(function(accessory, index, arr){
+                        myAccessories.push(accessory);
+                    });
+                } else if (deviceCfg['type'] == "Projector") {
+                    new MiProjector(this, deviceCfg).forEach(function(accessory, index, arr){
+                        myAccessories.push(accessory);
+                    });
+                } else if (deviceCfg['type'] == "AirConditioner") {
+                    new MiAirConditioner(this, deviceCfg).forEach(function(accessory, index, arr){
                         myAccessories.push(accessory);
                     });
                 } else {

@@ -92,7 +92,7 @@ irLearnButton.prototype.runTimer = function() {
         this.timekey = "123456789012345";
         if(this.upt == 4){
             this.device.call("miIO.ir_learn", {"key":this.timekey}).then(result => {
-                that.platform.log.info("[MiIRRemote][irLearn][DEBUG]irLearn Waiting...");
+                that.platform.log.info("[MiIRRemote][irLearn]irLearn Waiting...");
             }).catch(function(err) {
                 if(err == "Error: Call to device timed out"){
                     that.platform.log.debug("[MiIRRemote][ERROR]irLearn - Remote Offline");
@@ -103,7 +103,7 @@ irLearnButton.prototype.runTimer = function() {
         }else{
             this.device.call("miIO.ir_read", {"key":this.timekey}).then(result => {
                 if(result['code'] !== ""){
-                    that.platform.log.info("[MiIRRemote][irLearn][DEBUG]Learned Code: " + result['code']);
+                    that.platform.log.info("[MiIRRemote][irLearn]Learned Code: " + result['code']);
                     this.updatetimere = false;
                     this.upt = 0;
                     this.irLearnService.getCharacteristic(Characteristic.On).updateValue(false);
