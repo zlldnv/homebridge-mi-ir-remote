@@ -57,7 +57,7 @@ SwitchService.prototype.getServices = function() {
             var onoff = value ? "on" : "off";
             this.onoffstate = value;
             this.device.call("miIO.ir_play", {"freq":38400,"code":this.data[onoff]}).then(result => {
-                that.platform.log.info("[MiIRRemote][" + this.name + "]Switch: " + onoff);
+                that.platform.log.debug("[MiIRRemote][" + this.name + "]Switch: " + onoff);
                 callback(null);
             }).catch(function(err) {
                 that.platform.log.error("[MiIRRemote][ERROR]Switch Error: " + err);

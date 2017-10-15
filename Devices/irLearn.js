@@ -55,7 +55,7 @@ irLearnButton.prototype.getServices = function() {
     var irLearnButtonOnCharacteristic = irLearnButtonService.getCharacteristic(Characteristic.On);
     irLearnButtonOnCharacteristic
         .on('set',function(value, callback) {
-            this.platform.log.info("[MiIRRemote][irLearn] 6666" + value);
+            this.platform.log.info("[MiIRRemote][irLearn] Learn Started");
             if(value == true){
                 this.updatetimere = true;
                 this.upt = 5;
@@ -97,19 +97,19 @@ irLearnButton.prototype.runTimer = function() {
                 if(err == "Error: Call to device timed out"){
                     that.platform.log.debug("[MiIRRemote][ERROR]irLearn - Remote Offline");
                 }else{
-                    that.platform.log.error("[MiIRRemote][irLearn][ERROR] Error: " + err);
+                    that.platform.log.debug("[MiIRRemote][irLearn][ERROR] Error: " + err);
                 }
             });
         }else{
             this.device.call("miIO.ir_read", {"key":this.timekey}).then(result => {
                 if(result['code'] !== ""){
-                    that.platform.log.info("[MiIRRemote][irLearn][DEBUG]irLearn " + result['code']);
+                    that.platform.log.info("[MiIRRemote][irLearn][DEBUG]Learned Code: " + result['code']);
                     this.updatetimere = false;
                     this.upt = 0;
                     this.irLearnService.getCharacteristic(Characteristic.On).updateValue(false);
                     that.platform.log.info("[MiIRRemote][irLearn] Learn Success!");
                 }else{
-                    that.platform.log.info("[MiIRRemote][irLearn][DEBUG]Learn Waiting...");
+                    that.platform.log.debug("[MiIRRemote][irLearn][DEBUG]Learn Waiting...");
                 }
             }).catch(function(err) {
                 if(err == "Error: Call to device timed out"){
@@ -119,6 +119,6 @@ irLearnButton.prototype.runTimer = function() {
                 }
             });
         }
-        that.platform.log.info("[MiIRRemote][irLearn] " + this.upt + " Seconds left");
+        that.platform.log.debug("[MiIRRemote][irLearn] " + this.upt + " Seconds left");
     }
 }
