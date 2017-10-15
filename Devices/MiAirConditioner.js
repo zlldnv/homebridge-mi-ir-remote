@@ -175,10 +175,10 @@ AirConditionerService.prototype.GetDataString = function(dataa,value){
             }else{
                 returnkey = max;
             }
-            that.platform.log.error("[MiIRRemote][" + this.name + "]AirConditioner: No Usable Temperature, Unisset Temperature: " + value + " Use " + returnkey + " instead"); 
+            that.platform.log.error("[MiIRRemote][" + this.name + "]AirConditioner: Illegal Temperature, Unisset: " + value + " Use " + returnkey + " instead"); 
         }else{ 
             returnkey = this.defaultTemperature;
-            that.platform.log.error("[MiIRRemote][" + this.name + "]AirConditioner: No Usable Temperature, Unisset Temperature: " + value + " Use " + returnkey + " instead");      
+            that.platform.log.error("[MiIRRemote][" + this.name + "]AirConditioner: Illegal Temperature, Unisset: " + value + " Use " + returnkey + " instead");      
         }
     }
     return {"data" : dataa[returnkey], "tem" : returnkey};

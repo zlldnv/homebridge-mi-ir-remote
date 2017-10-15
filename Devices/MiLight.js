@@ -116,10 +116,10 @@ LightService.prototype.getServices = function() {
                     }else{
                         this.brightness = brightne = max;
                     }
-                    that.platform.log.error("[MiIRRemote][" + this.name + "]Light: No Usable Brightness, Unisset Brightness: " + value + " Use " + brightne + " instead"); 
+                    that.platform.log.error("[MiIRRemote][" + this.name + "]Light: Illegal Brightness, Unisset: " + value + " Use " + brightne + " instead"); 
                 }else{ 
                     this.brightness = brightne = 100;
-                    that.platform.log.error("[MiIRRemote][" + this.name + "]Light: No Usable Brightness, Unisset Brightness: " + value + " Use " + brightne + " instead");      
+                    that.platform.log.error("[MiIRRemote][" + this.name + "]Light: Illegal Brightness, Unisset: " + value + " Use " + brightne + " instead");      
                 }
             }
             this.device.call("miIO.ir_play", {"freq":38400,"code":this.data[brightne]}).then(result => { 
