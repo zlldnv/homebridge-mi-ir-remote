@@ -1,0 +1,20 @@
+{
+  "name": "homebridge-mi-ir-remote",
+  "version": "0.0.1",
+  "description": "ChuangMi Remote plugin for homebridge: https://github.com/nfarina/homebridge",
+  "license": "GPLV3",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://https://github.com/Zzm317/homebridge-mi-ir-remote.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Zzm317/homebridge-mi-ir-remote/issues"
+  },
+  "engines": {
+    "node": ">=7.6.0",
+    "homebridge": ">=0.2.0"
+  }
+}
