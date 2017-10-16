@@ -39,51 +39,51 @@ npm install -g miio homebridge-mi-ir-remote
                 "off": "xxxxxxx"
             }
         },{
-                "type": "Projector",
-                "ip": "192.168.31.xx",
-                "token": "xxxxxxxx",
-                "Name": "IR Projector",
-                "interval": 1,
-                "data": {
-                    "on" : "xxxxxxxxxxxxx",
-                    "off": "xxxxxxxxxxxxx"
-                }
+            "type": "Projector",
+            "ip": "192.168.31.xx",
+            "token": "xxxxxxxx",
+            "Name": "IR Projector",
+            "interval": 1,
+            "data": {
+                "on" : "xxxxxxxxxxxxx",
+                "off": "xxxxxxxxxxxxx"
+            }
         },{
-                "type": "Light",
-                "ip": "192.168.31.xx",
-                "token": "xxx",
-                "Name": "IR LightBulb",
-                "data": {
-                    "100" : "xxxx",
-                    "75" : "xxxxx",
-                    "50" : "xxxxx",
-                    "25" : "xxxxx",
-                    "off" : "xxxx"
-                }
+            "type": "Light",
+            "ip": "192.168.31.xx",
+            "token": "xxx",
+            "Name": "IR LightBulb",
+            "data": {
+                "100" : "xxxx",
+                "75" : "xxxxx",
+                "50" : "xxxxx",
+                "25" : "xxxxx",
+                "off" : "xxxx"
+            }
          },{
-                "type": "AirConditioner",
-                "ip": "192.168.31.xx",
-                "token": "xxx",
-                "Name": "IR AC",
-                "DefaultTemperature": 25,
-                "MinTemperature": 16,
-                "MaxTemperature": 30,
-                "data": {
-                    "Cool":{
-                        "30" : "xxx",
-                        "25" : "xxx",
-                        "20" : "xxx",
-                        "16" : "xxx"
-                    },
-                    "Heat":{
-                        "30" : "xxx",
-                        "25" : "xxx",
-                        "20" : "xxx",
-                        "16" : "xxx"
-                    },
-                    "off" : "xxxx"
-                }
-            }]
+            "type": "AirConditioner",
+            "ip": "192.168.31.xx",
+            "token": "xxx",
+            "Name": "IR AC",
+            "DefaultTemperature": 25,
+            "MinTemperature": 16,
+            "MaxTemperature": 30,
+            "data": {
+                "Cool":{
+                    "30" : "xxx",
+                    "25" : "xxx",
+                    "20" : "xxx",
+                    "16" : "xxx"
+                },
+                "Heat":{
+                    "30" : "xxx",
+                    "25" : "xxx",
+                    "20" : "xxx",
+                    "16" : "xxx"
+                },
+                "off" : "xxxx"
+            }
+        }]
     }]
 ```
 ## Get token
