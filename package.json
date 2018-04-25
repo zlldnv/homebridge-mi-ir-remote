@@ -1,17 +1,16 @@
 {
-  "name": "homebridge-mi-ir-remote",
+  "name": "homebridge-mi-ir-electrolux",
   "version": "0.0.5",
-  "description": "ChuangMi Remote plugin for homebridge: https://github.com/nfarina/homebridge",
+  "description":
+    "ChuangMi Remote plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "GPLV3",
-  "keywords": [
-    "homebridge-plugin"
-  ],
+  "keywords": ["homebridge-plugin"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Zzm317/homebridge-mi-ir-remote.git"
+    "url": "https://github.com/WestCoast5550/homebridge-mi-ir-remote.git"
   },
   "bugs": {
-    "url": "https://github.com/Zzm317/homebridge-mi-ir-remote/issues"
+    "url": "https://github.com/WestCoast5550/homebridge-mi-ir-remote"
   },
   "engines": {
     "node": ">=7.6.0",
