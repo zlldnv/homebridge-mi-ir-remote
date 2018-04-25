@@ -260,13 +260,13 @@ AirConditionerService.prototype.getStatusFrCha = function(state) {
   switch (state) {
     case Characteristic.TargetHeatingCoolingState.AUTO:
       console.log("I was here", this.onoffstate);
-      return this.onoffstate ? "Auto" : "AutoOn";
+      return this.onoffstate == 0 ? "Auto" : "AutoOn";
     case Characteristic.TargetHeatingCoolingState.COOL:
       console.log("I was here", this.onoffstate);
-      return this.onoffstate ? "Cool" : "CoolOn";
+      return this.onoffstate == 0 ? "Cool" : "CoolOn";
     case Characteristic.TargetHeatingCoolingState.HEAT:
       console.log("I was here", this.onoffstate);
-      return this.onoffstate ? "Heat" : "HeatOn";
+      return this.onoffstate == 0 ? "Heat" : "HeatOn";
     default:
       console.log("I was here", this.onoffstate);
       return "off";
