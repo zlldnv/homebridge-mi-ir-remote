@@ -1,8 +1,8 @@
 {
   "name": "homebridge-mi-ir-electrolux",
-  "version": "0.0.5",
   "description":
     "ChuangMi Remote plugin for homebridge: https://github.com/nfarina/homebridge",
+  "version": "0.1.0",
   "license": "GPLV3",
   "keywords": ["homebridge-plugin"],
   "repository": {

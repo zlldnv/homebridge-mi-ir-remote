@@ -1,59 +1,43 @@
-require('./Devices/irLearn');
-require('./Devices/MiSwitch');
-require('./Devices/MiLight');
-require('./Devices/MiProjector');
-require('./Devices/MiAirConditioner');
+require('./Devices/MiRemoteirLearn');
+require('./Devices/MiRemoteSwitch');
+require('./Devices/MiRemoteCustom');
+require('./Devices/MiRemoteLight');
+require('./Devices/MiRemoteProjector');
+require('./Devices/MiRemoteAirConditioner');
+require('./Devices/MiRemoteMomentarySwitch');
 
-var fs = require('fs');
-var packageFile = require("./package.json");
-var PlatformAccessory, Accessory, Service, Characteristic, UUIDGen;
+const miio = require('miio');
+var package = require("./package.json");
+var HomebridgeAPI;
 
 module.exports = function(homebridge) {
-    if(!isConfig(homebridge.user.configPath(), "platforms", "ChuangmiIRPlatform")) {
-        return;
+    if(!checkPlatformConfig(homebridge, "ChuangmiIRPlatform")){
+        return ;
     }
     
-    PlatformAccessory = homebridge.platformAccessory;
-    Accessory = homebridge.hap.Accessory;
-    Service = homebridge.hap.Service;
-    Characteristic = homebridge.hap.Characteristic;
-    UUIDGen = homebridge.hap.uuid;
+    HomebridgeAPI = homebridge;
 
-    homebridge.registerPlatform('homebridge-mi-ir-remote', 'ChuangmiIRPlatform', ChuangmiIRPlatform, true);
+    HomebridgeAPI.registerPlatform('homebridge-mi-ir-remote', 'ChuangmiIRPlatform', ChuangmiIRPlatform, true);
 }
 
-function isConfig(configFile, type, name) {
-    var config = JSON.parse(fs.readFileSync(configFile));
-    if("accessories" === type) {
-        var accessories = config.accessories;
-        for(var i in accessories) {
-            if(accessories[i]['accessory'] === name) {
-                return true;
-            }
+function checkPlatformConfig(homebridge, platform){
+    var configJSON = require(homebridge.user.configPath());
+    var platforms = configJSON.platforms;
+    for(var i in platforms) {
+        if(platforms[i]['platform'] === platform) {
+            return true;
         }
-    } else if("platforms" === type) {
-        var platforms = config.platforms;
-        for(var i in platforms) {
-            if(platforms[i]['platform'] === name) {
-                return true;
-            }
-        }
-    } else {
     }
-    
     return false;
 }
+
 
 function ChuangmiIRPlatform(log, config, api) {
     if(null == config) {
         return;
     }
     
-    this.Accessory = Accessory;
-    this.PlatformAccessory = PlatformAccessory;
-    this.Service = Service;
-    this.Characteristic = Characteristic;
-    this.UUIDGen = UUIDGen;
+    this.HomebridgeAPI = HomebridgeAPI;
     
     this.log = log;
     this.config = config;
@@ -63,22 +47,18 @@ function ChuangmiIRPlatform(log, config, api) {
     }
     
     
-    this.log.info("[MiIRRemote][INFO]*********************************************************************");
-    this.log.info("[MiIRRemote][INFO]                           MiIRRemote v%s                        *",packageFile.version);
-    this.log.info("[MiIRRemote][INFO] GitHub: https://github.com/Zzm317/homebridge-mi-ir-remote          *");
-    this.log.info("[MiIRRemote][INFO]                                                                    *");
-    this.log.info("[MiIRRemote][INFO]*********************************************************************");
-    this.log.info("[MiIRRemote][INFO]start success...");
+    this.log.info("Loading v%s ",package.version);
+
+    this.api.on('didFinishLaunching', function() {
+        this.log.info("Done!");
+    }.bind(this));
     
 }
 
-ChuangmiIRPlatform.prototype = {
-    accessories: function(callback) {
-        var myAccessories = [];
+ChuangmiIRPlatform.prototype.accessories = function(callback) {
+    var LoadedAccessories = [];
         if(this.config['hidelearn'] == false){
-            new irLearn(this, this.config['learnconfig']).forEach(function(accessory, index, arr){
-                myAccessories.push(accessory);
-            });
+            LoadedAccessories.push(new MiRemoteirLearn(this, this.config['learnconfig']));
         }
         var deviceCfgs = this.config['deviceCfgs'];
         
@@ -88,30 +68,64 @@ ChuangmiIRPlatform.prototype = {
                 if(null == deviceCfg['type'] || "" == deviceCfg['type'] || null == deviceCfg['token'] || "" == deviceCfg['token'] || null == deviceCfg['ip'] || "" == deviceCfg['ip']) {
                     continue;
                 }
-                
-                if (deviceCfg['type'] == "Switch") {
-                    new MiSwitch(this, deviceCfg).forEach(function(accessory, index, arr){
-                        myAccessories.push(accessory);
-                    });
-                } else if (deviceCfg['type'] == "Light") {
-                    new MiLight(this, deviceCfg).forEach(function(accessory, index, arr){
-                        myAccessories.push(accessory);
-                    });
-                } else if (deviceCfg['type'] == "Projector") {
-                    new MiProjector(this, deviceCfg).forEach(function(accessory, index, arr){
-                        myAccessories.push(accessory);
-                    });
-                } else if (deviceCfg['type'] == "AirConditioner") {
-                    new MiAirConditioner(this, deviceCfg).forEach(function(accessory, index, arr){
-                        myAccessories.push(accessory);
-                    });
-                } else {
+
+                switch(deviceCfg['type'])
+                {
+                    case "Switch":
+                        LoadedAccessories.push(new MiRemoteSwitch(this, deviceCfg));
+                        break;
+                    case "Light":
+                        LoadedAccessories.push(new MiRemoteLight(this, deviceCfg));
+                        break;
+                    case "Projector":
+                        LoadedAccessories.push(new MiRemoteProjector(this, deviceCfg));
+                        break;
+                    case "AirConditioner":
+                        LoadedAccessories.push(new MiRemoteAirConditioner(this, deviceCfg));
+                        break;
+                    case "Custom":
+                        LoadedAccessories.push(new MiRemoteCustom(this, deviceCfg));
+                        break;
+                    case "MomentarySwitch":
+                        LoadedAccessories.push(new MiRemoteMomentarySwitch(this, deviceCfg));
+                        break;    
+                    default:
+                        this.log.error("device type: " + deviceCfg['type'] + "Unexist!");
+                        break;
                 }
+
+                
             }
-            this.log.info("[MiIRRemote][INFO]device size: " + deviceCfgs.length + ", accessories size: " + myAccessories.length);
+            this.log.info("Loaded accessories: " + LoadedAccessories.length);
         }
         
 
-        callback(myAccessories);
+        callback(LoadedAccessories);
+}
+
+
+ChuangmiIRPlatform.prototype.getMiioDevice = function(configarray,dthat) {
+    var device = "";
+    var that = this;
+    try {
+        device = new miio.Device(configarray); 
+        dthat.device = device;
+        dthat.readydevice = true;
+        this.log.debug("Uppercase Success！");
+        return device;
+    } catch(e) {
+        this.log.debug("Uppercase failed");
+    }
+    try {
+        device = new miio.device(configarray)
+        .then(function(device) {
+            dthat.readydevice = true;
+            dthat.device = device;
+            that.log.debug("Linked To " + configarray.address);
+        });
+        this.log.debug("Lowercase Success！");
+    } catch(e) {
+        this.log.debug("Lowercase failed");
     }
 }
+    
