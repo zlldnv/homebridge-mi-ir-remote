@@ -158,6 +158,9 @@ Or you can try to get Your token from any rootrd android device.
 Details in https://github.com/jghaanstra/com.xiaomi-miio/blob/master/docs/obtain_token.md
 
 ## Version Logs  
+### 0.1.1
+1. Implement global ip and token settings in config
+2. Code improvements
 ### 0.1.0
 1. Rewrite the plugin and added support for both miio.Device and miio.device.
 ### 0.0.10

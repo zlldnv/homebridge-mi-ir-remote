@@ -87,10 +87,10 @@ MiRemoteirLearnButton.prototype.runTimer = function() {
         this.timekey = "123456789012345";
         if(this.upt == 4){
             this.device.call("miIO.ir_learn", {"key":this.timekey}).then(result => {
-                that.platform.log.info("[irLearn]irLearn Waiting...");
+                that.platform.log.info("[irLearn] irLearn Waiting...");
             }).catch(function(err) {
                 if(err == "Error: Call to device timed out"){
-                    that.platform.log.debug("[ERROR]irLearn - Remote Offline");
+                    that.platform.log.debug("[ERROR] irLearn - Remote Offline");
                 }else{
                     that.platform.log.debug("[irLearn][ERROR] Error: " + err);
                 }
@@ -98,17 +98,17 @@ MiRemoteirLearnButton.prototype.runTimer = function() {
         }else{
             this.device.call("miIO.ir_read", {"key":this.timekey}).then(result => {
                 if(result['code'] !== ""){
-                    that.platform.log.info("[irLearn]Learned Code: " + result['code']);
+                    that.platform.log.info("[irLearn] Learned Code: " + result['code']);
                     this.updatetimere = false;
                     this.upt = 0;
                     this.MiRemoteirLearnService.getCharacteristic(Characteristic.On).updateValue(false);
                     that.platform.log.info("[irLearn] Learn Success!");
                 }else{
-                    that.platform.log.debug("[irLearn][DEBUG]Learn Waiting...");
+                    that.platform.log.debug("[irLearn][DEBUG] Learn Waiting...");
                 }
             }).catch(function(err) {
                 if(err == "Error: Call to device timed out"){
-                    that.platform.log.debug("[ERROR]irLearn - Remote Offline");
+                    that.platform.log.debug("[ERROR] irLearn - Remote Offline");
                 }else{
                     that.platform.log.error("[irLearn][ERROR] Error: " + err);
                 }
