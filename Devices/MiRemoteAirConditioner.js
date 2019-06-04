@@ -248,12 +248,12 @@ MiRemoteAirConditionerService.prototype.GetDataString = function(dataa, value) {
 MiRemoteAirConditionerService.prototype.getStatusFrCha = function(state) {
   switch (state) {
     case Characteristic.TargetHeatingCoolingState.AUTO:
-      return this.onoffstate == 0 ? "Auto" : "AutoOn";
+      return this.onoffstate === 0 ? "Auto" : "AutoOn";
     case Characteristic.TargetHeatingCoolingState.COOL:
-      return this.onoffstate == 0 ? "Cool" : "CoolOn";
+      return this.onoffstate === 0 ? "Cool" : "CoolOn";
     case Characteristic.TargetHeatingCoolingState.HEAT:
-      return this.onoffstate == 0 ? "Heat" : "HeatOn";
+      return this.onoffstate === 0 ? "Heat" : "HeatOn";
     default:
-      return "off";
+      return this.onoffstate === 0 ? "doNothing" : "off";
   }
 };
