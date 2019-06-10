@@ -34,6 +34,18 @@ MiRemoteAirConditionerService = function(dThis) {
     (this.defaultTemperature = dThis.config["DefaultTemperature"] || 26);
   this.targettem = dThis.config["DefaultTemperature"] || 26;
   this.onoffstate = 0;
+  var mThis = this;
+  setInterval(function() {
+    dThis.platform.log.debug("AirConditioner keep alive");
+    mThis.device
+      .call("miIO.ir_play", { freq: 38400, code: "dummy" })
+      .then(result => {
+        dThis.platform.log.debug("AirConditioner SUCCESS");
+      })
+      .catch(res => {
+        dThis.platform.log.debug("AirConditioner FAIL");
+      });
+  }, 30 * 1000);
 };
 
 MiRemoteAirConditionerService.prototype.getServices = function() {
