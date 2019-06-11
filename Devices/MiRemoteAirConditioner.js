@@ -1,11 +1,10 @@
 let Service, Characteristic;
 
 MiRemoteAirConditioner = function(platform, config) {
+  const {ip} = config;
   this.platform = platform;
   this.config = config;
-
-  this.platform.log.debug(`[MiRemoteAirConditioner]Initializing MiRemoteAirConditioner: ${this.config["ip"]}`);
-
+  this.platform.log.debug(`[MiRemoteAirConditioner]Initializing MiRemoteAirConditioner: ${ip}`);
   return new MiRemoteAirConditionerService(this);
 };
 
