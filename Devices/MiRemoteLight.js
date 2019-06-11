@@ -23,7 +23,7 @@ class MiRemoteLightService {
     this.brightness = 100;
   }
 
-  getServices = function() {
+  getServices() {
     const self = this;
     const serialNumber = this.token.substring(this.token.length - 8);
     const infoService = new Service.AccessoryInformation();
@@ -141,5 +141,5 @@ class MiRemoteLightService {
         }.bind(this)
       );
     return [infoService, MiRemoteLightServices];
-  };
+  }
 }

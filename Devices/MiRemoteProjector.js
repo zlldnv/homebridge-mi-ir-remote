@@ -32,7 +32,7 @@ class MiRemoteProjectorService {
     this.onoffstate = false;
   }
 
-  getServices = function() {
+  getServices() {
     const self = this;
     const serialNumber = this.token.substring(this.token.length - 8);
     const infoService = new Service.AccessoryInformation();
@@ -86,5 +86,5 @@ class MiRemoteProjectorService {
     );
 
     return [infoService, MiRemoteProjectorServices];
-  };
+  }
 }

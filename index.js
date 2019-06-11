@@ -42,7 +42,7 @@ class ChuangmiIRPlatform {
     this.log.info("Loading v%s ", version);
   }
 
-  accessories = function(callback) {
+  accessories(callback) {
     var LoadedAccessories = [];
     if (this.config["hidelearn"] == false) {
       LoadedAccessories.push(new MiRemoteirLearn(this, this.config["learnconfig"]));
@@ -91,9 +91,9 @@ class ChuangmiIRPlatform {
     }
 
     callback(LoadedAccessories);
-  };
+  }
 
-  getMiioDevice = function(configarray, dthat) {
+  getMiioDevice(configarray, dthat) {
     var device = "";
     var that = this;
     try {
@@ -115,7 +115,7 @@ class ChuangmiIRPlatform {
     } catch (e) {
       this.log.debug("Lowercase failed");
     }
-  };
+  }
 }
 
 function checkPlatformConfig(homebridge, platform) {

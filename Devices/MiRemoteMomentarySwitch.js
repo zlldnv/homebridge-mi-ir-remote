@@ -27,7 +27,7 @@ class MiRemoteMomentarySwitchService {
     this.SwitchStatus;
   }
 
-  getServices = function() {
+  getServices() {
     const self = this;
     const serialNumber = this.token.substring(this.token.length - 8);
     const infoService = new Service.AccessoryInformation();
@@ -80,5 +80,5 @@ class MiRemoteMomentarySwitchService {
     );
 
     return [infoService, MiRemoteMomentarySwitchServices];
-  };
+  }
 }

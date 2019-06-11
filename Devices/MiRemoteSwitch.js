@@ -9,15 +9,15 @@ MiRemoteSwitch = function(platform, config) {
 };
 
 class MiRemoteSwitchService {
-  constructor({config, platform, ip, token}) {
-    const {Name} = config;
+  constructor({config, platform}) {
+    const {Name, ip, token, data} = config;
     this.name = Name;
     this.token = token;
     this.data = data;
     this.platform = platform;
 
     this.readydevice = false;
-    this.device = dThis.platform.getMiioDevice(
+    this.device = platform.getMiioDevice(
       {
         address: ip,
         token
@@ -31,7 +31,7 @@ class MiRemoteSwitchService {
     this.onoffstate = false;
   }
 
-  getServices = function() {
+  getServices() {
     var self = this;
     const serialNumber = this.token.substring(this.token.length - 8);
     const infoService = new Service.AccessoryInformation();
@@ -70,5 +70,5 @@ class MiRemoteSwitchService {
     );
 
     return [infoService, MiRemoteSwitchServices];
-  };
+  }
 }

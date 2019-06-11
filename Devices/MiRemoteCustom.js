@@ -33,7 +33,7 @@ class MiRemoteCustomService {
     this.onoffstate = false;
   }
 
-  getServices = function() {
+  getServices() {
     const self = this;
     const services = [];
     const serialNumber = this.token.substring(this.token.length - 8);

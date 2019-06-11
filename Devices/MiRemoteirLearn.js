@@ -29,7 +29,7 @@ class MiRemoteirLearnButton {
     this.timekey;
   }
 
-  getServices = function() {
+  getServices() {
     const serialNumber = this.token.substring(this.token.length - 8);
     const infoService = new Service.AccessoryInformation();
     infoService
@@ -58,9 +58,9 @@ class MiRemoteirLearnButton {
     );
 
     return [infoService, MiRemoteirLearnButtonService];
-  };
+  }
 
-  updateTimer = function() {
+  updateTimer() {
     if (this.updatetimere && this.readydevice) {
       clearTimeout(this.timer);
       this.timer = setTimeout(
@@ -79,9 +79,9 @@ class MiRemoteirLearnButton {
         3 * 100
       );
     }
-  };
+  }
 
-  runTimer = function() {
+  runTimer() {
     const self = this;
     this.upt = this.upt - 1;
     if (this.upt <= 0) {
@@ -128,5 +128,5 @@ class MiRemoteirLearnButton {
       }
       self.platform.log.debug(`[irLearn] ${this.upt} Seconds left`);
     }
-  };
+  }
 }
