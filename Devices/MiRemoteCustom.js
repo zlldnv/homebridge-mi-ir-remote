@@ -1,5 +1,6 @@
 let Service, Characteristic;
 
+
 MiRemoteCustom = function(platform, config) {
   const {ip} = config;
   this.platform = platform;
@@ -9,68 +10,63 @@ MiRemoteCustom = function(platform, config) {
 };
 
 class MiRemoteCustomService {
-  constructor(dThis) {
-    this.name = dThis.config["Name"];
-    this.token = dThis.config["token"];
-    this.data = dThis.config["data"];
-    this.interval = dThis.config["interval"];
-    if (!this.interval) {
-      this.interval = 1;
-    }
+  constructor({config, platform}) {
+    const {Name, token, data, interval = 1, ip} = config;
+    this.name = Name;
+    this.token = token;
+    this.data = data;
+    this.interval = interval;
 
     this.readydevice = false;
-    var configarray = {
-      address: dThis.config["ip"],
-      token: dThis.config["token"]
-    };
-    this.device = dThis.platform.getMiioDevice(configarray, this);
+    this.device = dThis.platform.getMiioDevice(
+      {
+        address: ip,
+        token
+      },
+      this
+    );
 
-    Service = dThis.platform.HomebridgeAPI.hap.Service;
-    Characteristic = dThis.platform.HomebridgeAPI.hap.Characteristic;
+    Service = platform.HomebridgeAPI.hap.Service;
+    Characteristic = platform.HomebridgeAPI.hap.Characteristic;
 
-    this.platform = dThis.platform;
+    this.platform = platform;
     this.onoffstate = false;
   }
 
   getServices = function() {
-    var that = this;
-    var services = [];
-    var tokensan = this.token.substring(this.token.length - 8);
-    var infoService = new Service.AccessoryInformation();
+    const self = this;
+    const services = [];
+    const serialNumber = this.token.substring(this.token.length - 8);
+    const infoService = new Service.AccessoryInformation();
     infoService
       .setCharacteristic(Characteristic.Manufacturer, "XiaoMi")
       .setCharacteristic(Characteristic.Model, "MiIRRemote-Custom")
-      .setCharacteristic(Characteristic.SerialNumber, tokensan);
+      .setCharacteristic(Characteristic.SerialNumber, serialNumber);
     services.push(infoService);
-    var MiRemoteCustomServices = new Service.Switch(this.name);
-    var MiRemoteCustomServicesCharacteristic = MiRemoteCustomServices.getCharacteristic(Characteristic.On);
+    const MiRemoteCustomServices = new Service.Switch(this.name);
+    const MiRemoteCustomServicesCharacteristic = MiRemoteCustomServices.getCharacteristic(Characteristic.On);
     MiRemoteCustomServicesCharacteristic.on(
       "set",
       function(value, callback) {
         try {
           if (this.readydevice) {
-            var onoff = value ? "on" : "off";
+            const onoff = value ? "on" : "off";
             this.onoffstate = value;
-            var onoffdata = this.data[onoff];
-            for (var i in onoffdata) {
-              var dataa = onoffdata[i];
-              var arra = dataa.split("|");
-              var duetime = arra[0];
-              var code = arra[1];
+            const onoffdata = this.data[onoff];
+            for (let i in onoffdata) {
+              const [duetime, code] = onoffdata[i].split("|");
               setTimeout(
                 function(code, onoff, i, duetime) {
-                  that.device
-                    .call("miIO.ir_play", {freq: 38400, code: code})
-                    .then(result => {
-                      that.platform.log.debug(
-                        "[" + that.name + "]Custom: Send " + onoff + " - " + i + " interval:" + duetime
-                      );
+                  self.device
+                    .call("miIO.ir_play", {freq: 38400, code})
+                    .then(() => {
+                      self.platform.log.debug(`[${self.name}] Custom: Send ${onoff} - ${i} interval: ${duetime}`);
                     })
                     .catch(function(err) {
                       if (err == "Error: Call to device timed out") {
-                        that.platform.log.debug("[" + this.name + "][ERROR]Custom - Remote Offline");
+                        self.platform.log.debug(`[${this.name}][ERROR]Custom - Remote Offline`);
                       } else {
-                        that.platform.log.error("[" + this.name + "][ERROR]Custom Error: " + err);
+                        self.platform.log.error(`[${this.name}][ERROR]Custom Error: ${err}`);
                       }
                     });
                 },
@@ -82,11 +78,11 @@ class MiRemoteCustomService {
               );
             }
           } else {
-            that.platform.log.info("[" + this.name + "][ERROR]Custom - Unready");
+            self.platform.log.info(`[${this.name}][ERROR]Custom - Unready`);
           }
           callback(null);
         } catch (err) {
-          that.platform.log.error("[General][ERROR]Custom Error: " + err);
+          self.platform.log.error(`[General][ERROR]Custom Error: ${err}`);
           callback(err);
         }
       }.bind(this)
