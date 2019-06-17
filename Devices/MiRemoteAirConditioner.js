@@ -1,4 +1,5 @@
-let Service, Characteristic;
+let Service;
+let Characteristic;
 
 MiRemoteAirConditioner = function(platform, config) {
   const {ip} = config;
@@ -34,20 +35,18 @@ class MiRemoteAirConditionerService {
     this.targettem = DefaultTemperature;
     this.onoffstate = 0;
     const halfMinute = 30 * 1000;
-    this.startPingingDevice(halfMinute);
+    this.startPingingDevice(halfMinute, this.platform);
   }
 
-  startPingingDevice(period) {
-    setInterval(() => {
+  startPingingDevice(period, platform) {
+    setInterval(async () => {
       platform.log.debug("AirConditioner keep alive");
-      this.device
-        .call("miIO.ir_play", {freq: 38400, code: "dummy"})
-        .then(() => {
-          platform.log.debug("AirConditioner SUCCESS");
-        })
-        .catch(() => {
-          platform.log.debug("AirConditioner FAIL");
-        });
+      try {
+        await this.device.call("miIO.ir_play", {freq: 38400, code: "dummy"});
+        platform.log.debug("AirConditioner SUCCESS");
+      } catch (err) {
+        platform.log.debug("AirConditioner FAIL");
+      }
     }, period);
   }
 
@@ -61,10 +60,8 @@ class MiRemoteAirConditionerService {
       .setCharacteristic(Characteristic.Model, "MiIRRemote-AirConditioner")
       .setCharacteristic(Characteristic.SerialNumber, tokensan);
     services.push(infoService);
-    const MiRemoteAirConditionerServices = (this.MiRemoteAirConditionerService = new Service.Thermostat(
-      this.name,
-      "MiRemoteAirConditioner"
-    ));
+    this.MiRemoteAirConditionerService = new Service.Thermostat(this.name, "MiRemoteAirConditioner");
+    const MiRemoteAirConditionerServices = this.MiRemoteAirConditionerService;
     MiRemoteAirConditionerServices.getCharacteristic(Characteristic.TargetTemperature).setProps({
       minValue: this.minTemperature,
       maxValue: this.maxTemperature,
@@ -73,54 +70,36 @@ class MiRemoteAirConditionerService {
     MiRemoteAirConditionerServices.getCharacteristic(Characteristic.TemperatureDisplayUnits).on("get", callback =>
       callback(Characteristic.TemperatureDisplayUnits.CELSIUS)
     );
-    MiRemoteAirConditionerServices.getCharacteristic(Characteristic.CurrentHeatingCoolingState).on(
-      "get",
-      function(callback) {
-        callback(null, this.onoffstate);
-      }.bind(this)
+    MiRemoteAirConditionerServices.getCharacteristic(Characteristic.CurrentHeatingCoolingState).on("get", callback =>
+      callback(null, this.onoffstate)
     );
     MiRemoteAirConditionerServices.getCharacteristic(Characteristic.TargetHeatingCoolingState)
-      .on(
-        "get",
-        function(callback) {
-          callback(null, this.onoffstate);
-        }.bind(this)
-      )
-      .on(
-        "set",
-        function(value, callback) {
-          var sstatus = this.SendData(value, this.targettem);
-          sstatus = sstatus["state"];
-          this.onoffstate = sstatus;
-          self.platform.log.debug(`[${this.name}] AirConditioner: Status ${this.getStatusFrCha(sstatus)}`);
-          callback(null, sstatus);
-        }.bind(this)
-      );
-    MiRemoteAirConditionerServices.getCharacteristic(Characteristic.CurrentTemperature).on(
-      "get",
-      function(callback) {
-        callback(null, this.targettem);
-      }.bind(this)
-    );
+      .on("get", callback => {
+        callback(null, this.onoffstate);
+      })
+      .on("set", (value, callback) => {
+        let sstatus = this.SendData(value, this.targettem);
+        sstatus = sstatus.state;
+        this.onoffstate = sstatus;
+        self.platform.log.debug(`[${this.name}] AirConditioner: Status ${this.getStatusFrCha(sstatus)}`);
+        callback(null, sstatus);
+      });
+    MiRemoteAirConditionerServices.getCharacteristic(Characteristic.CurrentTemperature).on("get", callback => {
+      callback(null, this.targettem);
+    });
     MiRemoteAirConditionerServices.getCharacteristic(Characteristic.TargetTemperature)
-      .on(
-        "get",
-        function(callback) {
-          callback(null, this.targettem);
-        }.bind(this)
-      )
-      .on(
-        "set",
-        function(value, callback) {
-          if (this.onoffstate !== 0) {
-            var tem = this.SendData(this.onoffstate, value);
-          }
-          this.targettem = this.onoffstate !== 0 ? tem["tem"] : value;
-          this.MiRemoteAirConditionerService.setCharacteristic(Characteristic.CurrentTemperature, this.targettem);
-          self.platform.log.debug("[" + this.name + "]AirConditioner: Temperature " + this.targettem);
-          callback(null, tem);
-        }.bind(this)
-      );
+      .on("get", callback => {
+        callback(null, this.targettem);
+      })
+      .on("set", (value, callback) => {
+        if (this.onoffstate !== 0) {
+          var tem = this.SendData(this.onoffstate, value);
+        }
+        this.targettem = this.onoffstate !== 0 ? tem.tem : value;
+        this.MiRemoteAirConditionerService.setCharacteristic(Characteristic.CurrentTemperature, this.targettem);
+        self.platform.log.debug(`[${this.name}]AirConditioner: Temperature ${this.targettem}`);
+        callback(null, tem);
+      });
 
     services.push(MiRemoteAirConditionerServices);
     return services;
@@ -134,25 +113,22 @@ class MiRemoteAirConditionerService {
     const sstatus = this.getStatusFrCha(state);
     let datas = {tem: value};
     if (sstatus == "off") {
-      datay = this.data["off"];
+      datay = this.data.off;
     } else if (sstatus == "Auto") {
-      if (this.data["Auto"] != null) {
+      if (this.data.Auto != null) {
         datas = this.GetDataString(this.data[sstatus], value);
-        var datay = datas["data"];
+        var datay = datas.data;
       } else {
-        datay = this.data["off"];
+        datay = this.data.off;
         state = 0;
-        setTimeout(
-          function() {
-            this.MiRemoteAirConditionerService.setCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
-            this.MiRemoteAirConditionerService.setCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
-          }.bind(this),
-          0.6 * 1000
-        );
+        setTimeout(() => {
+          this.MiRemoteAirConditionerService.setCharacteristic(Characteristic.CurrentHeatingCoolingState, 0);
+          this.MiRemoteAirConditionerService.setCharacteristic(Characteristic.TargetHeatingCoolingState, 0);
+        }, 0.6 * 1000);
       }
     } else {
       datas = this.GetDataString(this.data[sstatus], value);
-      var datay = datas["data"];
+      var datay = datas.data;
     }
     if (datay !== "" && this.readydevice) {
       this.device
@@ -161,15 +137,15 @@ class MiRemoteAirConditionerService {
           self.platform.log.debug(`[${this.name}]AirConditioner: Send Success`);
         })
         .catch(function(err) {
-          self.platform.log.error(`[this.name][ERROR]AirConditioner Error: ${err}`);
+          self.platform.log.error(`[${this.name}][ERROR]AirConditioner Error: ${err}`);
           state = this.onoffstate;
           callback(err);
         });
     } else {
       self.platform.log.info(`[${this.name}] AirConditioner: Unready`);
     }
-    var temm = datas["tem"] || value;
-    return {state: state, tem: temm};
+    const temm = datas.tem || value;
+    return {state, tem: temm};
   }
 
   GetDataString(dataa, value) {
@@ -177,23 +153,23 @@ class MiRemoteAirConditionerService {
     if (dataa[value]) {
       returnkey = value;
     } else {
-      var min = this.minTemperature;
-      var max = this.maxTemperature;
-      for (let i = value; i > this.minTemperature; i--) {
+      let min = this.minTemperature;
+      let max = this.maxTemperature;
+      for (let i = value; i > this.minTemperature; i -= 1) {
         if (dataa[i]) {
           min = i;
           i = -1;
         }
       }
-      for (let i = value; i <= this.maxTemperature; i++) {
+      for (let i = value; i <= this.maxTemperature; i += 1) {
         if (dataa[i]) {
           max = i;
           i = 101;
         }
       }
       if (min > this.minTemperature && max < this.maxTemperature) {
-        vmin = value - min;
-        vmax = max - value;
+        const vmin = value - min;
+        const vmax = max - value;
         returnkey = vmin > vmax ? min : max;
         this.platform.log.error(
           `[${this.name}]AirConditioner: Illegal Temperature, Unisset: ${value} Use ${returnkey} instead`

@@ -8,7 +8,19 @@ require("./Devices/MiRemoteMomentarySwitch");
 
 const miio = require("miio");
 const {version} = require("./package.json");
+
 let HomebridgeAPI;
+
+function checkPlatformConfig(homebridge, platform) {
+  const configJSON = require(homebridge.user.configPath());
+  const {platforms} = configJSON;
+  for (const i in platforms) {
+    if (platforms[i].platform === platform) {
+      return true;
+    }
+  }
+  return false;
+}
 
 module.exports = function(homebridge) {
   if (!checkPlatformConfig(homebridge, "ChuangmiIRPlatform")) {
@@ -22,15 +34,13 @@ module.exports = function(homebridge) {
 
 class ChuangmiIRPlatform {
   constructor(log, config, api) {
-    if (null == config) {
+    if (config == null) {
       return;
     }
     this.HomebridgeAPI = HomebridgeAPI;
     this.log = log;
     this.config = config;
-    if (api) {
-      this.api = api;
-    }
+    this.api = api;
 
     this.api.on(
       "didFinishLaunching",
@@ -43,27 +53,27 @@ class ChuangmiIRPlatform {
   }
 
   accessories(callback) {
-    var LoadedAccessories = [];
-    if (this.config["hidelearn"] == false) {
-      LoadedAccessories.push(new MiRemoteirLearn(this, this.config["learnconfig"]));
+    const LoadedAccessories = [];
+    if (this.config.hidelearn == false) {
+      LoadedAccessories.push(new MiRemoteirLearn(this, this.config.learnconfig));
     }
-    var deviceCfgs = this.config["deviceCfgs"];
+    const {deviceCfgs} = this.config;
 
     if (deviceCfgs instanceof Array) {
-      for (var i = 0; i < deviceCfgs.length; i++) {
-        var deviceCfg = deviceCfgs[i];
+      for (let i = 0; i < deviceCfgs.length; i++) {
+        const deviceCfg = deviceCfgs[i];
         if (
-          null == deviceCfg["type"] ||
-          "" == deviceCfg["type"] ||
-          null == deviceCfg["token"] ||
-          "" == deviceCfg["token"] ||
-          null == deviceCfg["ip"] ||
-          "" == deviceCfg["ip"]
+          deviceCfg.type == null ||
+          deviceCfg.type == "" ||
+          deviceCfg.token == null ||
+          deviceCfg.token == "" ||
+          deviceCfg.ip == null ||
+          deviceCfg.ip == ""
         ) {
           continue;
         }
 
-        switch (deviceCfg["type"]) {
+        switch (deviceCfg.type) {
           case "Switch":
             LoadedAccessories.push(new MiRemoteSwitch(this, deviceCfg));
             break;
@@ -83,19 +93,19 @@ class ChuangmiIRPlatform {
             LoadedAccessories.push(new MiRemoteMomentarySwitch(this, deviceCfg));
             break;
           default:
-            this.log.error("device type: " + deviceCfg["type"] + "Unexist!");
+            this.log.error(`device type: ${deviceCfg.type}Unexist!`);
             break;
         }
       }
-      this.log.info("Loaded accessories: " + LoadedAccessories.length);
+      this.log.info(`Loaded accessories: ${LoadedAccessories.length}`);
     }
 
     callback(LoadedAccessories);
   }
 
   getMiioDevice(configarray, dthat) {
-    var device = "";
-    var that = this;
+    let device = "";
+    const that = this;
     try {
       device = new miio.Device(configarray);
       dthat.device = device;
@@ -109,22 +119,11 @@ class ChuangmiIRPlatform {
       device = new miio.device(configarray).then(function(device) {
         dthat.readydevice = true;
         dthat.device = device;
-        that.log.debug("Linked To " + configarray.address);
+        that.log.debug(`Linked To ${configarray.address}`);
       });
       this.log.debug("Lowercase Success！");
     } catch (e) {
       this.log.debug("Lowercase failed");
     }
   }
-}
-
-function checkPlatformConfig(homebridge, platform) {
-  var configJSON = require(homebridge.user.configPath());
-  var platforms = configJSON.platforms;
-  for (var i in platforms) {
-    if (platforms[i]["platform"] === platform) {
-      return true;
-    }
-  }
-  return false;
 }
