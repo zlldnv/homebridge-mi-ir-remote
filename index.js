@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 require("./Devices/MiRemoteirLearn");
 require("./Devices/MiRemoteSwitch");
 require("./Devices/MiRemoteCustom");
@@ -6,20 +8,15 @@ require("./Devices/MiRemoteProjector");
 require("./Devices/MiRemoteAirConditioner");
 require("./Devices/MiRemoteMomentarySwitch");
 
+// eslint-disable-next-line import/no-unresolved
 const miio = require("miio");
 const {version} = require("./package.json");
 
 let HomebridgeAPI;
 
 function checkPlatformConfig(homebridge, platform) {
-  const configJSON = require(homebridge.user.configPath());
-  const {platforms} = configJSON;
-  for (const i in platforms) {
-    if (platforms[i].platform === platform) {
-      return true;
-    }
-  }
-  return false;
+  const {platforms} = require(`${homebridge.user.configPath()}`);
+  return Object.values(platforms).some(({platform: currentPlatform}) => currentPlatform === platform);
 }
 
 module.exports = function(homebridge) {
