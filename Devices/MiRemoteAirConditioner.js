@@ -136,7 +136,7 @@ class MiRemoteAirConditionerService {
         .then(() => {
           self.platform.log.debug(`[${this.name}]AirConditioner: Send Success`);
         })
-        .catch(function(err) {
+        .catch(err => {
           self.platform.log.error(`[${this.name}][ERROR]AirConditioner Error: ${err}`);
           state = this.onoffstate;
           callback(err);
@@ -171,9 +171,6 @@ class MiRemoteAirConditionerService {
         const vmin = value - min;
         const vmax = max - value;
         returnkey = vmin > vmax ? min : max;
-        this.platform.log.error(
-          `[${this.name}]AirConditioner: Illegal Temperature, Unisset: ${value} Use ${returnkey} instead`
-        );
       } else {
         returnkey = this.defaultTemperature;
         this.platform.log.error(

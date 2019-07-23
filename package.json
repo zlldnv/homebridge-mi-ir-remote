@@ -1,7 +1,7 @@
 {
   "name": "homebridge-mi-ir-electrolux",
   "description": "Xiaomi IR 360 Remote plugin for homebridge: https://github.com/nfarina/homebridge",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "GPLV3",
   "keywords": [
     "homebridge-plugin"
